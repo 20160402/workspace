@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>waterfall</title>
+	<style type="text/css">
+		*{ margin: 0; padding: 0; }
+		#container{ width: 100%; height: auto; margin: 0 auto; position: relative; border: 3px solid #ccc;}
+		#container div{ width: 150px; height: auto; position: absolute; left: 0; top: 0; }
+		#container div img{ width: 100%; height: auto; float: left; }
+	</style>
+	<script type="text/javascript">
+		window.onload = function(){
+			createDOM();
+		}
+
+		//createDOM
+		function createDOM(){
+			var	_container = document.createElement('div');
+			_container.id = 'container';
+			document.getElementsByTagName('body')[0].appendChild(_container);
+			for(var i = 1; i <= 70; i++){
+				var _img = document.createElement('img');
+				_img.src = 'images/' + i + '.jpg';
+				var _div = document.createElement('div');
+				_div.appendChild(_img);
+				_container.appendChild(_div);
+			}
+			checkImgLoad();
+		}
+
+		//checkImgLoad
+		function checkImgLoad(){
+			var _imgs = document.getElementsByTagName('img');
+			var _timer = 0;
+			var _completed = true;
+			(function isCompleted(){
+				window.clearTimeout(_timer)
+				for(var i = 0; i < _imgs.length; i++){
+					_completed = true;
+					if(!_imgs[i].complete){
+						_completed = false;
+						break;
+					}	
+				}
+				if(_completed){
+					changeImgPosition();
+				}else{
+					_timer = setTimeout(isCompleted,1000);
+				}
+			})();
+		}
+
+		//changeImgPosition
+		function changeImgPosition(){
+			var _width = document.documentElement.clientWidth || document.body.clientWidth;
+			var _counter = Math.floor((_width - 10)/160);
+			var _container = document.getElementById('container');
+			_container.style.width = _counter*160 + 10 + 'px';
+			//console.log(_container.style.width);
+			var _pos = new Array(_counter);
+			for(var i = 0; i < _pos.length; i++){
+				_pos[i] = 0;
+			}
+			var _divs = _container.getElementsByTagName('div');
+			for(var i = 0; i < _divs.length; i++){
+				var _min = _pos[0];
+				var n = 0;
+				for(var _index = 0; _index < _pos.length; _index++){
+					if(_min > _pos[_index]){
+						_min = _pos[_index];
+						n = _index;
+					}
+				}
+				_divs[i].style.left = n*160 + 10 + 'px';
+				_divs[i].style.top = _pos[n] + 10 + 'px';
+				_pos[n] += _divs[i].clientHeight + 10;
+			}
+			changContainerHeight(_pos);
+		}
+
+		function changContainerHeight(_pos){
+			var _height = 0;
+			for(var i = 0; i < _pos.length; i++){
+				if(_height < _pos[i]){
+					_height = _pos[i];
+				}
+			}
+			document.getElementById('container').style.height = _height + 10 + 'px';
+		}
+
+	</script>
+</head>
+<body>
+</body>
+</html>
